@@ -16,6 +16,7 @@ def scale_gif(path, scale, new_path=None):
         save_new_gif(new_frames, old_gif_information, new_path)
     else:
         gif = gif.resize(scale)
+        gif = gif.convert('RGB')
         gif.save(path)
 
 
