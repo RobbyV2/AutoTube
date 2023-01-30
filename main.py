@@ -21,7 +21,8 @@ redditbot = RedditBot()
 while True:
 
     # Gets our new posts pass if image related subs. Default is memes
-    posts = redditbot.get_posts("memes")
+    subreddits = ["angryupvote", "artmemes", "programmerhumor"]
+    posts = redditbot.get_posts("programmerhumor")
 
     # Create folder if it doesn't exist
     redditbot.create_data_folder()
@@ -42,16 +43,16 @@ while True:
     # This example uses the first post title.
     video_data = {
             "file": "video.mp4",
-            "title": f"{redditbot.post_data[0]['title']} - Dankest memes and comments {dt_string}!",
-            "description": "#shorts\nGiving you the hottest memes of the day with funny comments!",
-            "keywords":"meme,reddit,Dankestmemes",
+            "title": f"{redditbot.post_data[0]['title']} - Best memes and comments {dt_string}! #memes",
+            "description": "#shorts\nGiving you the best memes of the day with funny comments!",
+            "keywords":"meme,reddit,Dankestmemes,funny,popular,viral",
             "privacyStatus":"public"
     }
 
     print(video_data["title"])
-    print("Posting Video in 5 minutes...")
-    time.sleep(60 * 5)
+    print("Posting Video...")
+    time.sleep(1)
     upload_video(video_data)
 
     # Sleep until ready to post another video!
-    time.sleep(60 * 60 * 24 - 1)
+    time.sleep(900)

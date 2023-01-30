@@ -1,6 +1,7 @@
 from moviepy.editor import *
 import random
 import os
+from gtts import gTTS
 
 dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -58,21 +59,42 @@ class CreateMovie():
         colors = colors + ['PeachPuff3', 'OrangeRed3', 'silver']
         random.shuffle(colors)
         text_clips = []
+        tts1_noise = []
+        tts2_noise = []
         notification_sounds = []
         for i, post in enumerate(post_data):
             return_comment, return_count = add_return_comment(post['Best_comment'])
             txt = TextClip(return_comment, font='Courier',
                         fontsize=38, color=colors.pop(), bg_color='black')
+            txt = txt.on_color(col_opacity=0.5)
+
+            tts1 = gTTS(text=return_comment, lang="en", slow=False)
+            tts1.save("tts1.mp3")
+
+            tts1_sound = AudioFileClip(os.path.join(f"tts1.mp3"))
+            tts1_sound = tts1_sound.set_start((0, 0 + (i * 12)))
+            tts1_noise.append(tts1_sound)
+
             txt = txt.on_color(col_opacity=.3)
             txt = txt.set_position((5,500))
-            txt = txt.set_start((0, 3 + (i * 12))) # (min, s)
+            txt = txt.set_start((0, 0 + (i * 12))) # (min, s)
             txt = txt.set_duration(7)
             txt = txt.crossfadein(0.5)
             txt = txt.crossfadeout(0.5)
             text_clips.append(txt)
             return_comment, _ = add_return_comment(post['best_reply'])
             txt = TextClip(return_comment, font='Courier',
-            fontsize=38, color=colors.pop(), bg_color='black')
+                fontsize=38, color=colors.pop(), bg_color='black')
+            txt = txt.on_color(col_opacity=0.5)
+
+            tts2 = gTTS(text=return_comment, lang="en", slow=False)
+            tts2.save("tts2.mp3")
+
+            tts2_sound = AudioFileClip(os.path.join(f"tts2.mp3"))
+            tts2_sound = tts2_sound.set_start((0, 5 + (i * 12)))
+            tts2_noise.append(tts2_sound)
+
+
             txt = txt.on_color(col_opacity=.3)
             txt = txt.set_position((15,585 + (return_count * 50)))
             txt = txt.set_start((0, 5 + (i * 12))) # (min, s)
@@ -81,19 +103,19 @@ class CreateMovie():
             txt = txt.crossfadeout(0.5)
             text_clips.append(txt)
             notification = AudioFileClip(os.path.join(music_path, f"notification.mp3"))
-            notification = notification.set_start((0, 3 + (i * 12)))
+            notification = notification.set_start((0, 0 + (i * 12)))
             notification_sounds.append(notification)
             notification = AudioFileClip(os.path.join(music_path, f"notification.mp3"))
             notification = notification.set_start((0, 5 + (i * 12)))
             notification_sounds.append(notification)
         
-        music_file = os.path.join(music_path, f"music{random.randint(0,4)}.mp3")
+        music_file = os.path.join(music_path, f"music{random.randint(0,15)}.mp3")
         music = AudioFileClip(music_file)
         music = music.set_start((0,0))
         music = music.volumex(.4)
         music = music.set_duration(59)
 
-        new_audioclip = CompositeAudioClip([music]+notification_sounds)
+        new_audioclip = CompositeAudioClip([music]+notification_sounds+tts1_noise+tts2_noise)
         clip.write_videofile(f"video_clips.mp4", fps = 24)
 
         clip = VideoFileClip("video_clips.mp4",audio=False)
